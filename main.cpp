@@ -1,10 +1,16 @@
 #include "utilities.h"
 #include <stdio.h>
+#include <chrono>
 #include "hittable.h"
 #include "hittable_list.h"
 #include "sphere.h"
 #include "camera.h"
 #include "bvh.h"
+
+double elapsed_seconds(const std::chrono::steady_clock::time_point& start_time, const std::chrono::steady_clock::time_point& end_time) {
+    double elapsed_millis = std::chrono::duration<double, std::milli>(end_time - start_time).count(); 
+    return elapsed_millis / 1000.0;
+}
 
 int main(int, char**){
     // hittable_list world;
@@ -83,13 +89,15 @@ int main(int, char**){
     auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
     world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
+    const auto start_time = std::chrono::high_resolution_clock::now();
     world = hittable_list(make_shared<bvh_node>(world));
+    const auto end_bvh_construction_time = std::chrono::high_resolution_clock::now();
 
     camera cam;
 
     cam.aspect_ratio      = 16.0 / 9.0;
-    cam.image_width       = 1200;
-    cam.samples_per_pixel = 100;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 50;
     cam.max_depth         = 50;
 
     cam.vfov     = 20;
@@ -98,4 +106,8 @@ int main(int, char**){
     cam.vup      = vec3(0,1,0);
 
     cam.render(world);
+    const auto end_time = std::chrono::high_resolution_clock::now();
+    std::cout << "BVH Construction Time: " << elapsed_seconds(start_time, end_bvh_construction_time) << "s\n";
+    std::cout << "Render Time:           " << elapsed_seconds(end_bvh_construction_time, end_time)   << "s\n";
+    std::cout << "Total Time:            " << elapsed_seconds(start_time, end_time)                  << "s\n";
 }
