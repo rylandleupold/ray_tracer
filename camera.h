@@ -27,7 +27,7 @@ class camera {
             initialize();
 
             std::ofstream file;
-            file.open ("image.ppm");
+            file.open ("rendered_images/image.ppm");
             file << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
             for (int j = 0; j < image_height; j++) {

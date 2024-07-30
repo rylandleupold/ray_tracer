@@ -3,6 +3,7 @@
 
 #include "utilities.h"
 #include "rtw_stb_image.h"
+#include "perlin.h"
 
 class texture {
     public:
@@ -73,6 +74,21 @@ class image_texture : public texture {
 
     private:
         rtw_image image;
+};
+
+class noise_texture : public texture {
+    public:
+        noise_texture(double scale) : scale(scale) {}
+
+        color value(double u, double v, const point3& p) const override {
+            return color(1, 1, 1) * 0.5 * (1.0 + noise.noise(scale * p));  // Perlin noise, incorporating frequency (scale)
+            // return color(1, 1, 1) * noise.turb(p, 7);  // Turbulence used directly gives a "camouflage netting" appearance
+            // return color(.5, .5, .5) * (1 + std::sin(scale * p.z() + 10 * noise.turb(p, 7))); // Indirect turbulence, using turbulence to adjust the phase, gives a marble appearance
+        }
+
+    private:
+        perlin noise;
+        double scale;  // Adjust frequency of noise. Higher scale -> higher frequency
 };
 
 #endif
