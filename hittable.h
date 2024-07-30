@@ -8,10 +8,12 @@ class material;
 
 class hit_record{
     public:
-        point3 p;
-        vec3 normal;
+        point3 p;                  // Point in 3D space where intersection occurs
+        vec3 normal;               // Normal vector between p and object surface  
         shared_ptr<material> mat;
-        double t;
+        double t;                  // Distance along ray where intersection occurs
+        double u;                  // 2D texture coordinate[0]
+        double v;                  // 2D texture coordinate[1]
         bool front_face;
 
     void set_face_normal(const ray& r, const vec3& outward_normal) {

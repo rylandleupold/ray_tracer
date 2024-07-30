@@ -6,51 +6,19 @@
 #include "sphere.h"
 #include "camera.h"
 #include "bvh.h"
+#include "texture.h"
 
 double elapsed_seconds(const std::chrono::steady_clock::time_point& start_time, const std::chrono::steady_clock::time_point& end_time) {
     double elapsed_millis = std::chrono::duration<double, std::milli>(end_time - start_time).count(); 
     return elapsed_millis / 1000.0;
 }
 
-int main(int, char**){
-    // hittable_list world;
-
-    // auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
-    // auto material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5));
-    // auto material_left   = make_shared<dielectric>(1.50);
-    // auto material_bubble = make_shared<dielectric>(1.00 / 1.50);
-    // auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
-
-    // world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
-    // world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.2),   0.5, material_center));
-    // world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
-    // world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.4, material_bubble));
-    // world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
-
-    // camera cam;
-
-    // cam.aspect_ratio      = 16.0 / 9.0;
-    // cam.image_width       = 400;
-    // cam.samples_per_pixel = 100;
-    // cam.max_depth         = 50;
-
-
-    // cam.vfov     = 20;
-    // cam.lookfrom = point3(-2,2,1);
-    // cam.lookat   = point3(0,0,-1);
-    // cam.vup      = vec3(0,1,0);
-
-    // cam.defocus_angle = 10.0;
-    // cam.focus_dist    = 3.4;
-
-    // cam.render(world);
-
-
+void bouncing_spheres() {
     // COVER FROM THE BOOK
     hittable_list world;
 
-    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
-    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
+    auto checker = make_shared<checker_texture>(0.32, color(.2, .3, .1), color(.9, .9, .9));
+    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, make_shared<lambertian>(checker)));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
@@ -89,9 +57,7 @@ int main(int, char**){
     auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
     world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
-    const auto start_time = std::chrono::high_resolution_clock::now();
     world = hittable_list(make_shared<bvh_node>(world));
-    const auto end_bvh_construction_time = std::chrono::high_resolution_clock::now();
 
     camera cam;
 
@@ -106,8 +72,43 @@ int main(int, char**){
     cam.vup      = vec3(0,1,0);
 
     cam.render(world);
+}
+
+void checkered_spheres() {
+    hittable_list world;
+
+    auto checker = make_shared<checker_texture>(0.32, color(.2, .3, .1), color(.9, .9, .9));
+
+    world.add(make_shared<sphere>(point3(0,-10, 0), 10, make_shared<lambertian>(checker)));
+    world.add(make_shared<sphere>(point3(0, 10, 0), 10, make_shared<lambertian>(checker)));
+
+    camera cam;
+
+    cam.aspect_ratio      = 16.0 / 9.0;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth         = 50;
+
+    cam.vfov     = 20;
+    cam.lookfrom = point3(13,2,3);
+    cam.lookat   = point3(0,0,0);
+    cam.vup      = vec3(0,1,0);
+
+    cam.defocus_angle = 0;
+
+    cam.render(world);
+}
+
+int main(int, char**){
+    const auto start_time = std::chrono::high_resolution_clock::now();
+
+    int scene = 2;
+    
+    switch (scene) {
+        case 1: bouncing_spheres();  break;
+        case 2: checkered_spheres(); break;
+    }
+
     const auto end_time = std::chrono::high_resolution_clock::now();
-    std::cout << "BVH Construction Time: " << elapsed_seconds(start_time, end_bvh_construction_time) << "s\n";
-    std::cout << "Render Time:           " << elapsed_seconds(end_bvh_construction_time, end_time)   << "s\n";
-    std::cout << "Total Time:            " << elapsed_seconds(start_time, end_time)                  << "s\n";
+    std::cout << "Total Time: " << elapsed_seconds(start_time, end_time) << "s\n";
 }
