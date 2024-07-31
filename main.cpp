@@ -8,6 +8,8 @@
 #include "bvh.h"
 #include "texture.h"
 #include "quad.h"
+#include "tri.h"
+#include "disk.h"
 
 double elapsed_seconds(const std::chrono::steady_clock::time_point& start_time, const std::chrono::steady_clock::time_point& end_time, int decimal_places) {
     double elapsed_millis = std::chrono::duration<double, std::milli>(end_time - start_time).count(); 
@@ -181,10 +183,78 @@ void quads() {
     cam.render(world);
 }
 
+void tris() {
+    hittable_list world;
+
+    // Materials
+    auto left_red     = make_shared<lambertian>(color(1.0, 0.2, 0.2));
+    auto back_green   = make_shared<lambertian>(color(0.2, 1.0, 0.2));
+    auto right_blue   = make_shared<lambertian>(color(0.2, 0.2, 1.0));
+    auto upper_orange = make_shared<lambertian>(color(1.0, 0.5, 0.0));
+    auto lower_teal   = make_shared<lambertian>(color(0.2, 0.8, 0.8));
+
+    // Tris
+    world.add(make_shared<tri>(point3(-3,-2, 5), vec3(0, 0,-4), vec3(0, 4, 0), left_red));
+    world.add(make_shared<tri>(point3(-2,-2, 0), vec3(4, 0, 0), vec3(0, 4, 0), back_green));
+    world.add(make_shared<tri>(point3( 3,-2, 1), vec3(0, 0, 4), vec3(0, 4, 0), right_blue));
+    world.add(make_shared<tri>(point3(-2, 3, 1), vec3(4, 0, 0), vec3(0, 0, 4), upper_orange));
+    world.add(make_shared<tri>(point3(-2,-3, 5), vec3(4, 0, 0), vec3(0, 0,-4), lower_teal));
+
+    camera cam;
+
+    cam.aspect_ratio      = 1.0;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth         = 50;
+
+    cam.vfov     = 80;
+    cam.lookfrom = point3(0,0,9);
+    cam.lookat   = point3(0,0,0);
+    cam.vup      = vec3(0,1,0);
+
+    cam.defocus_angle = 0;
+
+    cam.render(world);
+}
+
+void disks() {
+    hittable_list world;
+
+    // Materials
+    auto left_red     = make_shared<lambertian>(color(1.0, 0.2, 0.2));
+    auto back_green   = make_shared<lambertian>(color(0.2, 1.0, 0.2));
+    auto right_blue   = make_shared<lambertian>(color(0.2, 0.2, 1.0));
+    auto upper_orange = make_shared<lambertian>(color(1.0, 0.5, 0.0));
+    auto lower_teal   = make_shared<lambertian>(color(0.2, 0.8, 0.8));
+
+    // Disks
+    world.add(make_shared<disk>(point3(-3,0, 1), vec3(1.5, 0,-1.5), vec3(0.5, 1.5, 0), left_red));
+    world.add(make_shared<disk>(point3(0, 0, 0), vec3(1, 0, -1.8), vec3(-1, 1, 0), back_green));
+    world.add(make_shared<disk>(point3( 3,0, 1), vec3(0, 0, 1.5), vec3(0, 1.5, 0), right_blue));
+    world.add(make_shared<disk>(point3(0, 3, 1), vec3(2, 0, 0), vec3(0, 0, 2), upper_orange));
+    world.add(make_shared<disk>(point3(0,-3, 2.5), vec3(2, 0, 0), vec3(0, 0,-2), lower_teal));
+
+    camera cam;
+
+    cam.aspect_ratio      = 1.0;
+    cam.image_width       = 400;
+    cam.samples_per_pixel = 100;
+    cam.max_depth         = 50;
+
+    cam.vfov     = 80;
+    cam.lookfrom = point3(0,0,9);
+    cam.lookat   = point3(0,0,0);
+    cam.vup      = vec3(0,1,0);
+
+    cam.defocus_angle = 0;
+
+    cam.render(world);
+}
+
 int main(int, char**){
     const auto start_time = std::chrono::high_resolution_clock::now();
 
-    int scene = 5;
+    int scene = 7;
     
     switch (scene) {
         case 1: bouncing_spheres();  break;
@@ -192,6 +262,8 @@ int main(int, char**){
         case 3: earth();             break;
         case 4: perlin_spheres();    break;
         case 5: quads();             break;
+        case 6: tris();              break;
+        case 7: disks();             break;
     }
 
     const auto end_time = std::chrono::high_resolution_clock::now();
