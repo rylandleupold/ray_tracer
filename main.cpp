@@ -75,7 +75,7 @@ void bouncing_spheres() {
     cam.lookat   = point3(0,0,0);
     cam.vup      = vec3(0,1,0);
 
-    cam.render(world);
+    cam.render(world, "bouncing_spheres");
 }
 
 void checkered_spheres() {
@@ -100,7 +100,7 @@ void checkered_spheres() {
 
     cam.defocus_angle = 0;
 
-    cam.render(world);
+    cam.render(world, "checkered_spheres");
 }
 
 void earth() {
@@ -122,7 +122,7 @@ void earth() {
 
     cam.defocus_angle = 0;
 
-    cam.render(hittable_list(globe));
+    cam.render(hittable_list(globe), "earth");
 }
 
 void perlin_spheres() {
@@ -146,7 +146,7 @@ void perlin_spheres() {
 
     cam.defocus_angle = 0;
 
-    cam.render(world);
+    cam.render(world, "perlin_spheres");
 }
 
 void quads() {
@@ -180,7 +180,7 @@ void quads() {
 
     cam.defocus_angle = 0;
 
-    cam.render(world);
+    cam.render(world, "quads");
 }
 
 void tris() {
@@ -214,7 +214,7 @@ void tris() {
 
     cam.defocus_angle = 0;
 
-    cam.render(world);
+    cam.render(world, "tris");
 }
 
 void disks() {
@@ -248,13 +248,13 @@ void disks() {
 
     cam.defocus_angle = 0;
 
-    cam.render(world);
+    cam.render(world, "disks");
 }
 
 int main(int, char**){
     const auto start_time = std::chrono::high_resolution_clock::now();
 
-    int scene = 7;
+    int scene = 1;
     
     switch (scene) {
         case 1: bouncing_spheres();  break;

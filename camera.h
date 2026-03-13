@@ -23,11 +23,11 @@ class camera {
         double defocus_angle = 0;   // Variation angle of rays through each pixel (angle of cone with apex at viewport center and disk at camera position)
         double focus_dist    = 10;  // Distance from camera lookfrom point to plane of perfect focus
 
-        void render(const hittable& world) {
+        void render(const hittable& world, std::string file_name) {
             initialize();
 
             std::ofstream file;
-            file.open ("rendered_images/image.ppm");
+            file.open ("../rendered_images/" + file_name + ".ppm");
             file << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
             for (int j = 0; j < image_height; j++) {
@@ -44,6 +44,10 @@ class camera {
             
             file.close();
             std::cout << "\rDone.                   \n";
+        }
+
+        void render(const hittable& world) {
+            render(world, "image");
         }
 
     private:
